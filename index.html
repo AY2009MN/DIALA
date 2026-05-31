@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#FF6B9D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>اختبار الرياضيات - ديالا</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{
+  margin:0;padding:0;box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-text-size-adjust:100%;
+  touch-action:manipulation
+}
+:root{
+  --pink:#FF6B9D;--purple:#C44AFF;--yellow:#FFD93D;--green:#6BCB77;--red:#FF6B6B;
+  --bg:linear-gradient(135deg,#FFF0F5 0%,#F0E6FF 50%,#E6F0FF 100%);
+  --card:rgba(255,255,255,0.95);--shadow:0 8px 32px rgba(0,0,0,0.1);
+  --radius:24px;
+  --font:'Noto Naskh Arabic','Samsung Sans','Tajawal','Segoe UI','Geeza Pro','Arial',sans-serif
+}
+html,body{height:100%;overflow:hidden;-webkit-overflow-scrolling:touch}
+body{
+  font-family:var(--font);background:var(--bg);display:flex;align-items:center;justify-content:center;
+  direction:rtl;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none
+}
+bdi{unicode-bidi:isolate}
+.screen{display:none;width:100%;height:100%;max-width:1000px;padding:14px 22px;flex-direction:column;overflow:hidden}
+#welcomeScreen,#resultScreen{overflow-y:auto}
+.screen.active{display:flex}
+
+/* ========== WELCOME SCREEN ========== */
+#welcomeScreen{align-items:center;justify-content:center;text-align:center}
+.welcome-deco-top{font-size:clamp(28px,4vw,40px);letter-spacing:8px;margin-bottom:6px;opacity:0.7}
+.welcome-hello{
+  font-size:clamp(34px,5vw,50px);font-weight:800;
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin:4px 0
+}
+.welcome-name{
+  font-size:clamp(48px,7vw,72px);font-weight:900;
+  background:linear-gradient(135deg,#FF1493,#FF6B9D);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin:0 0 8px;position:relative
+}
+.welcome-name::after{content:'💖';font-size:clamp(28px,4vw,40px);position:absolute;margin-right:10px}
+.welcome-sub{
+  font-size:clamp(16px,2.4vw,22px);color:#B088D0;margin-bottom:18px;
+  background:rgba(196,74,255,0.08);padding:8px 24px;border-radius:30px;display:inline-block
+}
+.welcome-divider{width:100px;height:4px;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:4px;margin:8px auto 20px}
+.welcome-info{
+  font-size:clamp(15px,2vw,20px);color:#555;background:rgba(255,255,255,0.7);padding:16px 22px;border-radius:18px;
+  margin-bottom:20px;max-width:480px;line-height:1.9;text-align:right;font-weight:600
+}
+.welcome-info b{color:var(--purple)}
+.start-btn{
+  padding:clamp(14px,2vw,18px) clamp(40px,7vw,56px);border-radius:50px;border:none;
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  color:#fff;font-size:clamp(22px,3vw,28px);font-weight:800;cursor:pointer;transition:.3s;
+  box-shadow:0 8px 28px rgba(196,74,255,0.4);font-family:var(--font)
+}
+.start-btn:active{transform:scale(0.95)}
+.install-btn{
+  padding:11px 36px;border-radius:50px;border:3px solid var(--green);background:rgba(107,203,119,0.1);
+  color:var(--green);font-size:18px;font-weight:700;cursor:pointer;transition:.3s;font-family:var(--font);
+  box-shadow:0 4px 16px rgba(107,203,119,0.2);margin-top:10px;display:inline-flex;align-items:center;gap:8px
+}
+.install-btn:active{transform:scale(0.95);background:var(--green);color:#fff}
+.install-btn.hidden{display:none}
+.install-note{margin-top:16px;font-size:12px;color:#bbb}
+
+/* ========== QUIZ SCREEN ========== */
+#quizScreen{padding:16px 20px}
+.quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-shrink:0}
+.quiz-counter{font-size:clamp(14px,1.8vw,18px);font-weight:800;color:#555}
+.quiz-score{font-size:clamp(13px,1.7vw,17px);color:var(--green);font-weight:700}
+.progress-wrap{width:100%;height:8px;background:#e8e0f0;border-radius:4px;margin-bottom:10px;overflow:hidden;flex-shrink:0}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:4px;transition:width .4s}
+.question-card{
+  background:var(--card);border-radius:var(--radius);padding:18px 20px;
+  box-shadow:var(--shadow);margin-bottom:12px;flex:1;min-height:0;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px
+}
+.question-type{
+  font-size:clamp(13px,1.8vw,18px);color:var(--purple);font-weight:700;
+  background:rgba(196,74,255,0.1);display:inline-block;padding:4px 16px;border-radius:20px
+}
+.question-text{font-size:clamp(20px,3vw,28px);font-weight:800;color:#333;text-align:center;margin:0}
+
+/* Big number display for question (no answer hints) */
+.q-bignum{
+  font-size:clamp(48px,8vw,84px);font-weight:900;color:var(--pink);
+  display:flex;align-items:center;justify-content:center;gap:clamp(8px,2vw,18px);
+  margin:8px 0;direction:ltr;line-height:1
+}
+.q-bignum .op{color:var(--purple)}
+.q-bignum .qmark{color:#bbb;font-size:clamp(52px,9vw,90px);animation:pulse 1.4s ease-in-out infinite}
+
+/* Comparison question (just two big numbers, no hearts) */
+.q-compare{
+  display:flex;justify-content:center;align-items:center;gap:clamp(14px,3vw,30px);margin:8px 0;direction:ltr
+}
+.q-compare-num{
+  font-size:clamp(54px,9vw,90px);font-weight:900;color:#444;
+  width:clamp(100px,15vw,150px);height:clamp(100px,15vw,150px);display:flex;align-items:center;justify-content:center;
+  background:#fff;border-radius:24px;border:4px solid #e8ddf0;cursor:pointer;
+  transition:.2s;box-shadow:0 6px 20px rgba(196,74,255,0.12);line-height:1
+}
+.q-compare-num:active{transform:scale(0.94)}
+.q-compare-num.selected{border-color:var(--pink);background:rgba(255,107,157,0.1);color:var(--pink);transform:scale(1.06)}
+.q-compare-mid{font-size:clamp(28px,4vw,44px);color:#aaa;font-weight:700}
+
+/* Symbol question (pick > or <) */
+.q-symbol-row{
+  display:flex;justify-content:center;align-items:center;gap:clamp(12px,2.5vw,24px);margin:8px 0;direction:ltr
+}
+.q-symbol-num{
+  font-size:clamp(50px,8vw,80px);font-weight:900;color:#444;
+  background:#fff;border-radius:22px;border:4px solid #e8ddf0;
+  width:clamp(86px,13vw,130px);height:clamp(86px,13vw,130px);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 20px rgba(196,74,255,0.12);line-height:1
+}
+.q-symbol-box{
+  font-size:clamp(42px,7vw,68px);color:#bbb;border:4px dashed #d0c0e0;border-radius:18px;
+  width:clamp(72px,11vw,108px);height:clamp(72px,11vw,108px);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(196,74,255,0.06);animation:pulse 1.4s ease-in-out infinite
+}
+
+/* Sequence visual for question */
+.q-seq{display:flex;justify-content:center;align-items:center;gap:clamp(8px,2vw,18px);margin:8px 0;direction:ltr}
+.q-seq-num{font-size:clamp(40px,6vw,60px);font-weight:800;color:#444;padding:6px 14px;line-height:1}
+.q-seq-num.given{color:var(--pink);font-size:clamp(54px,8vw,80px)}
+.q-seq-num.unknown{
+  color:#bbb;font-size:clamp(56px,9vw,86px);background:rgba(196,74,255,0.08);
+  border-radius:18px;padding:4px 22px;animation:pulse 1.4s ease-in-out infinite
+}
+.q-seq-arrow{font-size:clamp(26px,4vw,40px);color:#ccc;font-weight:900}
+
+/* Options */
+.options-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;flex-shrink:0}
+.options-grid.two{grid-template-columns:1fr 1fr;max-width:560px;margin:0 auto}
+.options-grid.four{grid-template-columns:repeat(4,1fr)}
+.option-btn{
+  padding:clamp(12px,2vw,20px);border-radius:18px;border:3px solid #e8e0f0;background:#fff;
+  font-size:clamp(26px,4vw,38px);font-weight:800;color:#333;cursor:pointer;transition:.2s;
+  font-family:var(--font);text-align:center;
+  box-shadow:0 4px 14px rgba(196,74,255,0.08)
+}
+.option-btn:active{transform:scale(0.95)}
+.option-btn.selected{border-color:var(--purple);background:rgba(196,74,255,0.1);box-shadow:0 0 0 3px rgba(196,74,255,0.3)}
+.option-btn.correct{border-color:var(--green);background:rgba(107,203,119,0.12);color:var(--green)}
+.option-btn.wrong{border-color:var(--red);background:rgba(255,107,107,0.1);color:var(--red)}
+
+/* ========== SOLUTION SCREEN ========== */
+#solutionScreen{padding:16px 20px}
+.sol-header{
+  text-align:center;padding:8px 14px;border-radius:16px;margin-bottom:8px;
+  font-size:clamp(16px,2.4vw,22px);font-weight:800;animation:popIn .5s ease;
+  display:flex;align-items:center;justify-content:center;gap:10px
+}
+.sol-header.correct{background:linear-gradient(135deg,rgba(107,203,119,0.18),rgba(107,203,119,0.08));color:var(--green)}
+.sol-header.wrong{background:linear-gradient(135deg,rgba(255,107,107,0.18),rgba(255,107,107,0.08));color:var(--red)}
+.sol-header-emoji{font-size:clamp(28px,4vw,40px);display:inline-block;margin:0;animation:bounceBig .8s ease;line-height:1}
+
+.sol-question-recap{
+  background:linear-gradient(135deg,rgba(196,74,255,0.10),rgba(255,107,157,0.08));
+  border:2px dashed rgba(196,74,255,0.3);
+  border-radius:14px;padding:6px 14px;margin-bottom:8px;text-align:center;
+  display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap
+}
+.sol-recap-label{
+  font-size:clamp(13px,1.7vw,16px);color:var(--purple);font-weight:700;margin:0
+}
+.sol-recap-text{
+  font-size:clamp(20px,3vw,30px);font-weight:800;color:#333;direction:ltr;display:inline-block;line-height:1.2
+}
+
+.sol-card{
+  background:var(--card);border-radius:var(--radius);padding:14px 18px;
+  box-shadow:var(--shadow);margin-bottom:10px;flex:1;min-height:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  position:relative;overflow:hidden
+}
+.sol-title{font-size:clamp(15px,2vw,20px);color:var(--purple);font-weight:800;margin:0;text-align:center}
+.sol-step{font-size:clamp(13px,1.8vw,18px);color:#666;margin:2px 0;text-align:center;font-weight:600}
+
+/* Animated icons row for solution */
+.sol-icons{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:clamp(4px,1vw,10px);margin:6px 0;direction:ltr;width:100%}
+.sol-icon-wrap{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  opacity:0;animation:iconDraw .5s ease forwards;
+  width:clamp(32px,5.5vw,58px);height:clamp(32px,5.5vw,58px)
+}
+.sol-icon{
+  font-size:clamp(32px,5.5vw,58px);line-height:1;display:flex;align-items:center;justify-content:center;
+  filter:drop-shadow(0 3px 5px rgba(255,107,157,0.3));transition:transform .5s, filter .5s;
+  width:100%;height:100%
+}
+.sol-icon-wrap.taken .sol-icon{
+  opacity:0.35;filter:grayscale(0.9) drop-shadow(0 2px 3px rgba(255,107,107,0.4));
+  transform:scale(0.85)
+}
+.sol-icon-wrap.grow .sol-icon{
+  transform:scale(1.25);
+  filter:drop-shadow(0 6px 10px rgba(107,203,119,0.5))
+}
+.sol-x-mark{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(42px,7vw,76px);font-weight:900;color:var(--red);
+  text-shadow:0 0 8px rgba(255,107,107,0.5);
+  opacity:0;transform:scale(0) rotate(-180deg);
+  pointer-events:none;line-height:1
+}
+.sol-x-mark.show{animation:stampX .6s ease forwards}
+.sol-icon-wrap.taken{animation:iconDraw .5s ease forwards, shakeX .4s .3s ease}
+.sol-icon.crossed{animation:iconPopCross .5s ease forwards}
+.sol-op{font-size:clamp(32px,5vw,48px);font-weight:900;color:var(--pink);margin:0 8px;opacity:0;animation:fadeIn .4s ease forwards}
+.sol-op.eq{color:var(--purple)}
+.sol-result{
+  font-size:clamp(48px,8vw,80px);font-weight:900;
+  background:linear-gradient(135deg,var(--green),#4caf50);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin:6px 0;opacity:0;animation:resultBig .8s ease forwards;display:flex;align-items:center;gap:10px;line-height:1
+}
+.sol-result .sparkle{
+  font-size:clamp(26px,4vw,42px);-webkit-background-clip:initial;-webkit-text-fill-color:initial;
+  background:initial;color:var(--yellow);animation:spin 2s linear infinite;display:inline-block
+}
+
+/* Comparison solution layout */
+.sol-comp{display:flex;justify-content:center;align-items:center;gap:clamp(12px,3vw,32px);margin:6px 0;direction:ltr;width:100%;flex-wrap:nowrap}
+.sol-comp-col{display:flex;flex-direction:column;align-items:center;gap:8px;flex:0 0 auto;min-width:0}
+.sol-comp-num{font-size:clamp(40px,6vw,68px);font-weight:900;color:#555;padding:4px 18px;border-radius:18px;transition:.6s;opacity:0;animation:fadeIn .4s ease forwards;background:rgba(255,255,255,0.6);text-align:center;line-height:1.1}
+.sol-comp-num.winner{
+  color:var(--green);background:rgba(107,203,119,0.18);
+  animation:fadeIn .4s ease forwards, winnerPulse 1.2s 1s ease infinite;
+  box-shadow:0 4px 16px rgba(107,203,119,0.3)
+}
+.sol-comp-num.loser{color:#bbb}
+.sol-comp-tower{
+  display:grid;grid-template-columns:repeat(5,auto);gap:clamp(2px,0.6vw,6px);
+  justify-content:center;align-items:center;
+  padding:clamp(6px,1vw,12px);border-radius:16px;background:rgba(255,255,255,0.5);
+  border:2px dashed rgba(196,74,255,0.25)
+}
+.sol-comp-tower .sol-icon-wrap{width:clamp(24px,3.6vw,40px);height:clamp(24px,3.6vw,40px)}
+.sol-comp-tower .sol-icon{font-size:clamp(24px,3.6vw,40px);filter:drop-shadow(0 2px 4px rgba(255,107,157,0.3))}
+.sol-comp-tower .sol-x-mark{font-size:clamp(30px,4.5vw,50px)}
+.sol-comp-col.winner-col .sol-comp-tower{border-color:var(--green);background:rgba(107,203,119,0.08)}
+.sol-comp-col.winner-col .sol-icon{animation:floatTower 2s ease-in-out infinite}
+.sol-comp-symbol{
+  font-size:clamp(54px,9vw,84px);font-weight:900;color:var(--purple);
+  opacity:0;transform:scale(0);animation:symbolReveal .8s ease forwards;
+  text-shadow:0 4px 12px rgba(196,74,255,0.4);line-height:1
+}
+.sol-comp-symbol.winner-glow{color:var(--green);text-shadow:0 4px 12px rgba(107,203,119,0.5)}
+
+/* Symbol question solution */
+.sol-symbol-final{
+  font-size:clamp(40px,6vw,64px);font-weight:900;color:#444;
+  display:flex;align-items:center;justify-content:center;gap:clamp(8px,2vw,18px);
+  margin:6px 0;direction:ltr;opacity:0;animation:fadeIn .6s ease forwards;line-height:1
+}
+.sol-symbol-final .big-sym{
+  font-size:clamp(56px,9vw,92px);color:#fff;
+  background:linear-gradient(135deg,var(--green),#4caf50);
+  border-radius:22px;padding:4px 24px;
+  box-shadow:0 6px 18px rgba(107,203,119,0.5);
+  text-shadow:0 2px 6px rgba(0,0,0,0.15);
+  animation:bounceBig 1.2s ease infinite
+}
+
+/* Sequence solution */
+.sol-seq{display:flex;justify-content:center;align-items:center;gap:clamp(4px,1vw,12px);margin:6px 0;direction:ltr;flex-wrap:nowrap;width:100%}
+.sol-seq-num{
+  font-size:clamp(28px,4.5vw,52px);font-weight:900;color:#888;padding:4px 12px;border-radius:14px;
+  background:rgba(255,255,255,0.6);box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  opacity:0;animation:iconDraw .5s ease forwards;text-align:center;line-height:1.1
+}
+.sol-seq-num.given{color:var(--pink);background:rgba(255,107,157,0.12)}
+.sol-seq-num.answer{
+  color:#fff;background:linear-gradient(135deg,var(--pink),var(--purple));
+  font-size:clamp(38px,6vw,72px);box-shadow:0 6px 20px rgba(196,74,255,0.5);
+  animation:answerReveal 1s ease forwards;opacity:0;
+  text-shadow:0 2px 6px rgba(0,0,0,0.2)
+}
+.sol-seq-arrow{font-size:clamp(22px,3vw,38px);color:#ccc;opacity:0;animation:fadeIn .3s ease forwards;font-weight:900}
+
+.sol-note{
+  font-size:clamp(14px,1.8vw,18px);color:#666;font-weight:700;text-align:center;margin:4px 0 0;
+  background:rgba(255,217,61,0.18);padding:6px 16px;border-radius:14px;
+  opacity:0;animation:fadeIn .5s 1.5s ease forwards
+}
+
+/* Navigation */
+.quiz-nav{display:flex;gap:12px;margin-top:8px;flex-shrink:0}
+.btn-primary{
+  flex:1;padding:clamp(12px,1.8vw,18px);border-radius:18px;border:none;
+  font-size:clamp(18px,2.4vw,24px);font-weight:800;cursor:pointer;transition:.2s;font-family:var(--font);
+  background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;box-shadow:0 6px 20px rgba(196,74,255,0.35)
+}
+.btn-primary:disabled{opacity:0.4;cursor:default}
+.btn-primary:active:not(:disabled){transform:scale(0.96)}
+
+/* ========== RESULT SCREEN ========== */
+#resultScreen{padding:16px 20px}
+.result-header{text-align:center;margin-bottom:16px}
+.result-big-emoji{font-size:64px;margin-bottom:4px;animation:float 2s ease-in-out infinite}
+.result-score{font-size:48px;font-weight:800;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.result-label{font-size:16px;color:#888}
+.result-message{font-size:18px;color:#555;margin:4px 0 12px}
+.result-list{flex:1;overflow-y:auto;padding:2px}
+.result-item{
+  background:var(--card);border-radius:16px;padding:14px;margin-bottom:8px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.06);border-right:5px solid #ddd
+}
+.result-item.correct{border-right-color:var(--green)}
+.result-item.wrong{border-right-color:var(--red)}
+.result-q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.result-q-num{font-size:12px;color:#999;font-weight:600}
+.result-q-status{font-size:18px}
+.result-q-text{font-size:17px;font-weight:600;color:#333;margin-bottom:4px}
+.result-answers{font-size:14px;color:#666;margin-bottom:6px;line-height:1.6}
+.result-answers .wrong{color:var(--red);font-weight:700}
+.result-answers .right{color:var(--green);font-weight:700}
+.result-answers .cr{color:var(--green);font-weight:700}
+.result-restart{
+  padding:14px;border-radius:16px;border:none;background:linear-gradient(135deg,var(--pink),var(--purple));
+  color:#fff;font-size:20px;font-weight:700;cursor:pointer;margin-top:12px;font-family:var(--font);width:100%;box-shadow:0 4px 16px rgba(196,74,255,0.3)
+}
+.result-restart:active{transform:scale(0.97)}
+
+/* ========== ANIMATIONS ========== */
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes popIn{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes bounceBig{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.1)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-8px) rotate(3deg)}75%{transform:translateY(-4px) rotate(-3deg)}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes iconPop{
+  0%{opacity:0;transform:scale(0) rotate(-30deg)}
+  60%{opacity:1;transform:scale(1.25) rotate(10deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+@keyframes iconDraw{
+  0%{opacity:0;transform:scale(0.2) translateY(-30px) rotate(-25deg)}
+  50%{opacity:1;transform:scale(1.3) translateY(0) rotate(8deg)}
+  100%{opacity:1;transform:scale(1) translateY(0) rotate(0)}
+}
+@keyframes stampX{
+  0%{opacity:0;transform:scale(3) rotate(-180deg)}
+  50%{opacity:1;transform:scale(1.5) rotate(0)}
+  70%{opacity:1;transform:scale(1.1) rotate(5deg)}
+  100%{opacity:1;transform:scale(1.2) rotate(0)}
+}
+@keyframes shakeX{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px) rotate(-3deg)}
+  75%{transform:translateX(6px) rotate(3deg)}
+}
+@keyframes growBig{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.4)}
+  100%{transform:scale(1.25)}
+}
+@keyframes floatTower{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-4px)}
+}
+@keyframes iconPopCross{
+  0%{opacity:0;transform:scale(0)}
+  40%{opacity:1;transform:scale(1.2)}
+  70%{opacity:1;filter:none;text-decoration:none}
+  100%{opacity:0.25;transform:scale(0.85);filter:grayscale(1);text-decoration:line-through}
+}
+@keyframes resultBig{
+  0%{opacity:0;transform:scale(0.3)}
+  60%{opacity:1;transform:scale(1.3)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes winnerPulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(107,203,119,0.6)}
+  50%{transform:scale(1.08);box-shadow:0 0 0 12px rgba(107,203,119,0)}
+}
+@keyframes symbolReveal{
+  0%{opacity:0;transform:scale(0) rotate(-180deg)}
+  60%{opacity:1;transform:scale(1.4) rotate(20deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+@keyframes answerReveal{
+  0%{opacity:0;transform:scale(0) rotate(-90deg)}
+  60%{opacity:1;transform:scale(1.3) rotate(10deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+@keyframes floatSparkle{
+  0%,100%{opacity:0;transform:translateY(0) scale(0.8)}
+  20%{opacity:1}
+  80%{opacity:1}
+  50%{transform:translateY(-30px) scale(1.2)}
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* Phones: switch 4-col options grid to 2-col */
+@media(max-width:600px){
+  .options-grid.four{grid-template-columns:repeat(2,1fr)}
+  .screen{padding:12px 14px}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== WELCOME SCREEN ========== -->
+<div id="welcomeScreen" class="screen active">
+  <div class="welcome-deco-top">💖 🌸 ✨ 🎀 🌺</div>
+  <div class="welcome-hello">أهلاً وسهلاً يا</div>
+  <div class="welcome-name" id="childNameDisplay">ديالا</div>
+  <div class="welcome-sub">🎯 اختبار الرياضيات للأطفال</div>
+  <div class="welcome-divider"></div>
+  <div class="welcome-info">
+    🌸 الاختبار يحتوي على <b>7 أسئلة</b><br>
+    ➕ جمع &nbsp; ➖ طرح<br>
+    🔼 الأكبر &nbsp; 🔽 الأصغر<br>
+    ⏭ العدد التالي &nbsp; ⏮ العدد السابق<br>
+    ⚖️ رمز المقارنة <b>&gt;</b> أو <b>&lt;</b>
+  </div>
+  <button class="start-btn" id="startBtn">🌸 ابدئي الاختبار 🌸</button>
+  <button class="install-btn" id="installBtn" style="display:none">📲 تثبيت التطبيق</button>
+  <div class="install-note" id="installNote">📱 يمكن تثبيت التطبيق من قائمة المتصفح</div>
+  <div class="install-note" id="installedNote" style="display:none">✅ التطبيق مثبت على جهازك</div>
+</div>
+
+<!-- ========== QUIZ SCREEN ========== -->
+<div id="quizScreen" class="screen">
+  <div class="quiz-header">
+    <span class="quiz-counter" id="quizCounter">السؤال 1 من 7</span>
+    <span class="quiz-score" id="quizScore">✅ 0</span>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+  </div>
+  <div class="question-card" id="questionCard">
+    <div class="question-type" id="qType"></div>
+    <div class="question-text" id="qText"></div>
+    <div id="qVisual"></div>
+  </div>
+  <div id="optionsContainer"></div>
+  <div class="quiz-nav">
+    <button class="btn-primary" id="nextBtn" disabled>⏭ شاهدي الحل</button>
+  </div>
+</div>
+
+<!-- ========== SOLUTION SCREEN ========== -->
+<div id="solutionScreen" class="screen">
+  <div class="quiz-header">
+    <span class="quiz-counter" id="solCounter">حل السؤال 1</span>
+    <span class="quiz-score" id="solScore">✅ 0</span>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="solProgressBar" style="width:0%"></div>
+  </div>
+  <div class="sol-header" id="solHeader">
+    <span class="sol-header-emoji" id="solHeaderEmoji">🎉</span>
+    <span id="solHeaderText">أحسنتِ!</span>
+  </div>
+  <div class="sol-question-recap" id="solQuestionRecap">
+    <div class="sol-recap-label">📌 <span id="solRecapType">سؤال</span></div>
+    <div class="sol-recap-text" id="solRecapText"></div>
+  </div>
+  <div class="sol-card" id="solCard"></div>
+  <div class="quiz-nav">
+    <button class="btn-primary" id="solNextBtn">⏭ السؤال التالي</button>
+  </div>
+</div>
+
+<!-- ========== RESULT SCREEN ========== -->
+<div id="resultScreen" class="screen">
+  <div class="result-header">
+    <div class="result-big-emoji" id="resultEmoji">🎉</div>
+    <div class="result-score" id="resultScore">7/7</div>
+    <div class="result-label">من الأسئلة</div>
+    <div class="result-message" id="resultMessage">أحسنت يا ديالا! 🌟</div>
+  </div>
+  <div class="result-list" id="resultList"></div>
+  <button class="result-restart" id="restartBtn">🔄 اختبار جديد</button>
+</div>
+
+<script>
+const CHILD_NAME = 'ديالا';
+
+const App = {
+  state: { questions: [], currentIndex: 0, answers: [], correctCount: 0 },
+  EMOJIS: ['💖','🌹','🌸','🌷','🌺','🎀','👧','🦄','🧸','🍓','🍭','🍫','👑','💎','🦋','🐰','🐱','🧁','🍰','🌈'],
+  ICON: '💖',
+  // The 7 fixed question types in order
+  TYPES: ['addition','subtraction','bigger','smaller','next','previous','symbol'],
+
+  init() {
+    document.getElementById('childNameDisplay').textContent = CHILD_NAME;
+    document.getElementById('startBtn').addEventListener('click', () => this.startQuiz());
+    document.getElementById('nextBtn').addEventListener('click', () => this.showSolution());
+    document.getElementById('solNextBtn').addEventListener('click', () => this.nextQuestion());
+    document.getElementById('restartBtn').addEventListener('click', () => this.resetQuiz());
+    this.registerSW();
+  },
+
+  registerSW() {
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      document.getElementById('installNote').style.display = 'none';
+      document.getElementById('installedNote').style.display = 'block';
+      return;
+    }
+    // PWA install prompt
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-flex';
+      installBtn.addEventListener('click', () => {
+        installBtn.style.display = 'none';
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((result) => {
+          deferredPrompt = null;
+        });
+      });
+    });
+    window.addEventListener('appinstalled', () => {
+      document.getElementById('installNote').style.display = 'none';
+      document.getElementById('installedNote').style.display = 'block';
+      installBtn.style.display = 'none';
+    });
+  },
+
+  startQuiz() {
+    // Generate exactly one question per type, in shuffled order
+    const order = [...this.TYPES];
+    for (let i = order.length-1; i>0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    this.state.questions = order.map(t => this.createQuestion(t));
+    this.state.currentIndex = 0;
+    this.state.answers = [];
+    this.state.correctCount = 0;
+    this.showScreen('quizScreen');
+    this.renderQuestion(0);
+  },
+
+  resetQuiz() {
+    this.state.questions = [];
+    this.state.currentIndex = 0;
+    this.state.answers = [];
+    this.state.correctCount = 0;
+    this.showScreen('welcomeScreen');
+  },
+
+  showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  },
+
+  // ========== QUESTION CREATION ==========
+  createQuestion(type) {
+    switch(type) {
+      case 'addition': return this.genAddition();
+      case 'subtraction': return this.genSubtraction();
+      case 'bigger': return this.genCompare(true);
+      case 'smaller': return this.genCompare(false);
+      case 'next': return this.genNext();
+      case 'previous': return this.genPrev();
+      case 'symbol': return this.genSymbol();
+    }
+  },
+
+  genAddition() {
+    const a = randInt(1, 18);
+    const b = randInt(1, Math.min(19-a, 10));
+    const correct = a + b;
+    return {
+      type:'addition', typeAr:'➕ سؤال جمع',
+      text:'احسبي ناتج الجمع',
+      a, b, correct,
+      options: this.genOptions(correct, 4, 0, 20),
+      icon: this.randomIcon()
+    };
+  },
+
+  genSubtraction() {
+    const a = randInt(3, 20);
+    const b = randInt(1, a-1);
+    const correct = a - b;
+    return {
+      type:'subtraction', typeAr:'➖ سؤال طرح',
+      text:'احسبي ناتج الطرح',
+      a, b, correct,
+      options: this.genOptions(correct, 4, 0, 20),
+      icon: this.randomIcon()
+    };
+  },
+
+  genCompare(askBigger) {
+    const a = randInt(1, 19);
+    let b;
+    do { b = randInt(1, 20); } while (b === a);
+    const correct = askBigger ? Math.max(a,b) : Math.min(a,b);
+    return {
+      type: askBigger ? 'bigger' : 'smaller',
+      typeAr: askBigger ? '🔼 العدد الأكبر' : '🔽 العدد الأصغر',
+      text: askBigger ? 'اختاري العدد الأكبر' : 'اختاري العدد الأصغر',
+      compareA: a, compareB: b, correct, askBigger,
+      sym: Math.max(a,b) === a ? '>' : '<'
+    };
+  },
+
+  genNext() {
+    const n = randInt(1, 19);
+    const correct = n + 1;
+    return {
+      type:'next', typeAr:'⏭ العدد التالي',
+      text:`ما العدد الذي يأتي بعد ${n}؟`,
+      n, correct,
+      options: this.genOptions(correct, 4, 1, 20)
+    };
+  },
+
+  genPrev() {
+    const n = randInt(2, 20);
+    const correct = n - 1;
+    return {
+      type:'previous', typeAr:'⏮ العدد السابق',
+      text:`ما العدد الذي يأتي قبل ${n}؟`,
+      n, correct,
+      options: this.genOptions(correct, 4, 1, 20)
+    };
+  },
+
+  genSymbol() {
+    const a = randInt(1, 19);
+    let b;
+    do { b = randInt(1, 20); } while (b === a);
+    const correctSym = a > b ? '>' : '<';
+    return {
+      type:'symbol', typeAr:'⚖️ رمز المقارنة',
+      text:'اختاري الرمز المناسب',
+      a, b, correct: correctSym,
+      options: ['>','<']
+    };
+  },
+
+  genOptions(correct, count, min, max) {
+    const opts = new Set([correct]);
+    let attempts = 0;
+    while (opts.size < count && attempts < 100) {
+      const r = Math.random();
+      let w = r < 0.5 ? correct + randInt(1,5) : correct - randInt(1,5);
+      if (w >= min && w <= max && w !== correct) opts.add(w);
+      attempts++;
+    }
+    while (opts.size < count) {
+      const w = randInt(min, max);
+      if (!opts.has(w)) opts.add(w);
+    }
+    return [...opts].sort(() => Math.random() - 0.5);
+  },
+
+  randomIcon() {
+    return this.EMOJIS[Math.floor(Math.random() * this.EMOJIS.length)];
+  },
+
+  // ========== RENDER QUESTION (no answer hints) ==========
+  renderQuestion(index) {
+    const q = this.state.questions[index];
+    if (!q) return;
+    const total = this.state.questions.length;
+
+    document.getElementById('quizCounter').textContent = `السؤال ${index+1} من ${total}`;
+    document.getElementById('quizScore').textContent = `✅ ${this.state.correctCount}`;
+    document.getElementById('progressBar').style.width = `${(index/total)*100}%`;
+    document.getElementById('qType').textContent = q.typeAr;
+    document.getElementById('qText').textContent = q.text;
+
+    const visual = document.getElementById('qVisual');
+    visual.innerHTML = '';
+    const opts = document.getElementById('optionsContainer');
+    opts.innerHTML = '';
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.disabled = true;
+    nextBtn.textContent = '⏭ شاهدي الحل';
+
+    if (q.type === 'addition' || q.type === 'subtraction') {
+      this.renderArithmeticQ(visual, q);
+      this.renderOptionsGrid(opts, q);
+    } else if (q.type === 'bigger' || q.type === 'smaller') {
+      this.renderCompareQ(visual, q, index);
+    } else if (q.type === 'next' || q.type === 'previous') {
+      this.renderSeqQ(visual, q);
+      this.renderOptionsGrid(opts, q);
+    } else if (q.type === 'symbol') {
+      this.renderSymbolQ(visual, q);
+      this.renderSymbolOptions(opts, q);
+    }
+  },
+
+  renderArithmeticQ(container, q) {
+    const op = q.type === 'addition' ? '+' : '−';
+    const w = document.createElement('div');
+    w.className = 'q-bignum';
+    w.innerHTML = `<span>${q.a}</span><span class="op">${op}</span><span>${q.b}</span><span class="op">=</span><span class="qmark">؟</span>`;
+    container.appendChild(w);
+  },
+
+  renderCompareQ(container, q, index) {
+    const w = document.createElement('div');
+    w.className = 'q-compare';
+    const makeNum = (val) => {
+      const d = document.createElement('div');
+      d.className = 'q-compare-num';
+      d.textContent = val;
+      d.dataset.value = val;
+      d.addEventListener('click', () => this.selectCompare(val, d, index));
+      return d;
+    };
+    const mid = document.createElement('div');
+    mid.className = 'q-compare-mid';
+    mid.textContent = 'و';
+    w.appendChild(makeNum(q.compareA));
+    w.appendChild(mid);
+    w.appendChild(makeNum(q.compareB));
+    container.appendChild(w);
+  },
+
+  renderSeqQ(container, q) {
+    const w = document.createElement('div');
+    w.className = 'q-seq';
+    const num = (val, cls) => {
+      const s = document.createElement('span');
+      s.className = `q-seq-num ${cls}`;
+      s.textContent = val;
+      return s;
+    };
+    const arr = () => { const a=document.createElement('span'); a.className='q-seq-arrow'; a.textContent='←'; return a; };
+    if (q.type === 'next') {
+      w.appendChild(num(q.n,'given'));
+      w.appendChild(arr());
+      w.appendChild(num('؟','unknown'));
+    } else {
+      w.appendChild(num('؟','unknown'));
+      w.appendChild(arr());
+      w.appendChild(num(q.n,'given'));
+    }
+    container.appendChild(w);
+  },
+
+  renderSymbolQ(container, q) {
+    const w = document.createElement('div');
+    w.className = 'q-symbol-row';
+    const a = document.createElement('div'); a.className='q-symbol-num'; a.textContent=q.a;
+    const box = document.createElement('div'); box.className='q-symbol-box'; box.textContent='؟';
+    const b = document.createElement('div'); b.className='q-symbol-num'; b.textContent=q.b;
+    w.appendChild(a); w.appendChild(box); w.appendChild(b);
+    container.appendChild(w);
+  },
+
+  renderOptionsGrid(container, q) {
+    container.className = 'options-grid four';
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.dataset.value = opt;
+      btn.addEventListener('click', () => this.selectOption(opt));
+      container.appendChild(btn);
+    });
+  },
+
+  renderSymbolOptions(container, q) {
+    container.className = 'options-grid two';
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.style.fontSize = '44px';
+      btn.textContent = opt;
+      btn.dataset.value = opt;
+      btn.addEventListener('click', () => this.selectOption(opt));
+      container.appendChild(btn);
+    });
+  },
+
+  // ========== ANSWER HANDLING ==========
+  selectOption(value) {
+    const index = this.state.currentIndex;
+    if (this.state.answers[index]) return;
+    const q = this.state.questions[index];
+    const isCorrect = value === q.correct;
+    this.state.answers[index] = { selected: value, correct: isCorrect };
+    if (isCorrect) this.state.correctCount++;
+
+    const btns = document.querySelectorAll('.option-btn');
+    btns.forEach(btn => {
+      const v = btn.dataset.value;
+      const num = isNaN(parseInt(v)) ? v : parseInt(v);
+      btn.style.pointerEvents = 'none';
+      if (num === q.correct) btn.classList.add('correct');
+      if (num === value && !isCorrect) btn.classList.add('wrong');
+    });
+
+    document.getElementById('quizScore').textContent = `✅ ${this.state.correctCount}`;
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.disabled = false;
+    nextBtn.textContent = '⏭ شاهدي الحل';
+  },
+
+  selectCompare(value, cardEl, index) {
+    if (this.state.answers[index]) return;
+    const q = this.state.questions[index];
+    const isCorrect = value === q.correct;
+    this.state.answers[index] = { selected: value, correct: isCorrect };
+    if (isCorrect) this.state.correctCount++;
+
+    document.querySelectorAll('.q-compare-num').forEach(c => {
+      c.style.pointerEvents = 'none';
+      if (parseInt(c.dataset.value) === value) c.classList.add('selected');
+    });
+
+    document.getElementById('quizScore').textContent = `✅ ${this.state.correctCount}`;
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.disabled = false;
+    nextBtn.textContent = '⏭ شاهدي الحل';
+  },
+
+  // ========== SOLUTION SCREEN ==========
+  showSolution() {
+    const index = this.state.currentIndex;
+    const q = this.state.questions[index];
+    const ans = this.state.answers[index];
+    const total = this.state.questions.length;
+
+    document.getElementById('solCounter').textContent = `حل السؤال ${index+1} من ${total}`;
+    document.getElementById('solScore').textContent = `✅ ${this.state.correctCount}`;
+    document.getElementById('solProgressBar').style.width = `${((index+0.5)/total)*100}%`;
+
+    const header = document.getElementById('solHeader');
+    const emoji = document.getElementById('solHeaderEmoji');
+    const text = document.getElementById('solHeaderText');
+    header.className = 'sol-header ' + (ans.correct ? 'correct' : 'wrong');
+    if (ans.correct) {
+      emoji.textContent = '🎉';
+      text.textContent = `أحسنتِ يا ${CHILD_NAME}!`;
+    } else {
+      emoji.textContent = '💡';
+      text.textContent = 'لا تحزني، شاهدي الحل';
+    }
+
+    document.getElementById('solRecapType').textContent = q.typeAr;
+    document.getElementById('solRecapText').innerHTML = this.getQuestionRecap(q);
+
+    const card = document.getElementById('solCard');
+    card.innerHTML = '';
+    this.addSparkleBg(card);
+
+    if (q.type === 'addition') this.renderAdditionSol(card, q, ans);
+    else if (q.type === 'subtraction') this.renderSubtractionSol(card, q, ans);
+    else if (q.type === 'bigger' || q.type === 'smaller') this.renderCompareSol(card, q, ans);
+    else if (q.type === 'next' || q.type === 'previous') this.renderSeqSol(card, q, ans);
+    else if (q.type === 'symbol') this.renderSymbolSol(card, q, ans);
+
+    const nextBtn = document.getElementById('solNextBtn');
+    nextBtn.textContent = (index === total-1) ? '🏁 عرض النتيجة' : '⏭ السؤال التالي';
+    this.showScreen('solutionScreen');
+  },
+
+  addSparkleBg(card) { /* removed — was visually cluttered */ },
+
+  // helper: make an icon wrapper with optional × stamp + grow trigger
+  makeIconWrap(icon, drawDelay) {
+    const w = document.createElement('span');
+    w.className = 'sol-icon-wrap';
+    w.style.animationDelay = `${drawDelay}s`;
+    const i = document.createElement('span');
+    i.className = 'sol-icon';
+    i.textContent = icon;
+    w.appendChild(i);
+    const x = document.createElement('span');
+    x.className = 'sol-x-mark';
+    x.textContent = '✕';
+    w.appendChild(x);
+    return w;
+  },
+
+  renderAdditionSol(card, q, ans) {
+    const title = document.createElement('div');
+    title.className = 'sol-title';
+    title.style.fontSize = '24px'; title.style.color = '#333'; title.style.fontWeight='800';
+    title.textContent = `${q.a} + ${q.b} = ؟`;
+    card.appendChild(title);
+
+    const step1 = document.createElement('div');
+    step1.className = 'sol-step';
+    step1.textContent = `أولاً نرسم ${q.a}`;
+    card.appendChild(step1);
+
+    const row = document.createElement('div');
+    row.className = 'sol-icons';
+    card.appendChild(row);
+
+    let delay = 0.2;
+    const allWraps = [];
+    for (let i=0;i<q.a;i++) {
+      const w = this.makeIconWrap(q.icon, delay);
+      row.appendChild(w);
+      allWraps.push(w);
+      delay += 0.25;
+    }
+
+    const plus = document.createElement('span');
+    plus.className = 'sol-op';
+    plus.textContent = '+';
+    plus.style.animationDelay = `${delay}s`;
+    row.appendChild(plus);
+    delay += 0.4;
+
+    const step2 = document.createElement('div');
+    step2.className = 'sol-step';
+    step2.textContent = `ثم نضيف ${q.b}`;
+    step2.style.opacity='0';
+    step2.style.animation = `fadeIn .4s ${delay-0.2}s ease forwards`;
+    card.appendChild(step2);
+    // move step2 above row? Keep flow; it appears below. We'll insert before row instead.
+    card.insertBefore(step2, row);
+
+    for (let i=0;i<q.b;i++) {
+      const w = this.makeIconWrap(q.icon, delay);
+      const ic = w.querySelector('.sol-icon');
+      ic.style.filter = 'hue-rotate(60deg) drop-shadow(0 4px 6px rgba(196,74,255,0.35))';
+      row.appendChild(w);
+      allWraps.push(w);
+      delay += 0.25;
+    }
+
+    // After all icons drawn, grow them all to celebrate
+    const growStart = delay + 0.3;
+    allWraps.forEach((w,i) => {
+      setTimeout(() => w.classList.add('grow'), (growStart + i*0.04)*1000);
+    });
+    delay = growStart + 0.6;
+
+    const eqRow = document.createElement('div');
+    eqRow.className = 'sol-result';
+    eqRow.style.animationDelay = `${delay}s`;
+    eqRow.innerHTML = `<span class="sparkle">✨</span><span>= ${q.correct}</span><span class="sparkle">✨</span>`;
+    card.appendChild(eqRow);
+
+    const note = document.createElement('div');
+    note.className = 'sol-note';
+    note.textContent = `🌟 ${q.a} + ${q.b} يساوي ${q.correct}`;
+    note.style.animationDelay = `${delay+0.8}s`;
+    card.appendChild(note);
+  },
+
+  renderSubtractionSol(card, q, ans) {
+    const title = document.createElement('div');
+    title.className = 'sol-title';
+    title.style.fontSize = '24px'; title.style.color = '#333'; title.style.fontWeight='800';
+    title.textContent = `${q.a} − ${q.b} = ؟`;
+    card.appendChild(title);
+
+    const step1 = document.createElement('div');
+    step1.className = 'sol-step';
+    step1.textContent = `معنا ${q.a}`;
+    card.appendChild(step1);
+
+    const row = document.createElement('div');
+    row.className = 'sol-icons';
+    card.appendChild(row);
+
+    let delay = 0.2;
+    const wraps = [];
+    for (let i=0;i<q.a;i++) {
+      const w = this.makeIconWrap(q.icon, delay);
+      row.appendChild(w);
+      wraps.push(w);
+      delay += 0.25;
+    }
+
+    // After all drawn, stamp × on first b
+    const stampStart = delay + 0.4;
+
+    const step2 = document.createElement('div');
+    step2.className = 'sol-step';
+    step2.style.color = 'var(--red)';
+    step2.style.fontSize = '17px';
+    step2.style.fontWeight = '700';
+    step2.textContent = `❌ نأخذ منها ${q.b}`;
+    step2.style.opacity = '0';
+    step2.style.animation = `fadeIn .4s ${stampStart-0.1}s ease forwards`;
+    card.appendChild(step2);
+
+    for (let i=0;i<q.b;i++) {
+      const w = wraps[i];
+      const x = w.querySelector('.sol-x-mark');
+      const stampAt = stampStart + i*0.35;
+      setTimeout(() => {
+        x.classList.add('show');
+        w.classList.add('taken');
+      }, stampAt*1000);
+    }
+    delay = stampStart + q.b*0.35 + 0.5;
+
+    const step3 = document.createElement('div');
+    step3.className = 'sol-step';
+    step3.style.color = 'var(--green)';
+    step3.style.fontSize = '18px';
+    step3.style.fontWeight = '700';
+    step3.textContent = '⬇️ يبقى لنا';
+    step3.style.opacity = '0';
+    step3.style.animation = `fadeIn .4s ${delay}s ease forwards`;
+    card.appendChild(step3);
+    delay += 0.4;
+
+    // Grow the remaining (non-taken) icons big & green
+    const rem = q.a - q.b;
+    for (let i=q.b;i<q.a;i++) {
+      const w = wraps[i];
+      const growAt = delay + (i-q.b)*0.15;
+      setTimeout(() => w.classList.add('grow'), growAt*1000);
+    }
+    delay += rem*0.15 + 0.4;
+
+    const eqRow = document.createElement('div');
+    eqRow.className = 'sol-result';
+    eqRow.style.animationDelay = `${delay}s`;
+    eqRow.innerHTML = `<span class="sparkle">✨</span><span>= ${q.correct}</span><span class="sparkle">✨</span>`;
+    card.appendChild(eqRow);
+
+    const note = document.createElement('div');
+    note.className = 'sol-note';
+    note.textContent = `🌟 ${q.a} − ${q.b} يساوي ${q.correct}`;
+    note.style.animationDelay = `${delay+0.8}s`;
+    card.appendChild(note);
+  },
+
+  buildTower(num, baseDelay, isWinner, icon) {
+    const col = document.createElement('div');
+    col.className = 'sol-comp-col' + (isWinner ? ' winner-col' : '');
+    const tower = document.createElement('div');
+    tower.className = 'sol-comp-tower';
+    const maxShow = Math.min(num, 12);
+    const wraps = [];
+    for (let i=0;i<maxShow;i++) {
+      const w = this.makeIconWrap(icon, baseDelay + i*0.15);
+      tower.appendChild(w);
+      wraps.push(w);
+    }
+    if (num > 12) {
+      const more = document.createElement('span');
+      more.style.cssText='font-size:16px;color:#888;opacity:0;font-weight:700;animation:fadeIn .3s '+(baseDelay+maxShow*0.15)+'s ease forwards';
+      more.textContent = `+${num-12}`;
+      tower.appendChild(more);
+    }
+    col.appendChild(tower);
+    const numEl = document.createElement('div');
+    numEl.className = 'sol-comp-num ' + (isWinner ? 'winner' : 'loser');
+    numEl.textContent = num;
+    const finishDelay = baseDelay + Math.min(num,12)*0.15 + 0.3;
+    numEl.style.animationDelay = `${finishDelay}s`;
+    col.appendChild(numEl);
+    return { col, finishDelay, wraps };
+  },
+
+  renderCompareSol(card, q, ans) {
+    const title = document.createElement('div');
+    title.className = 'sol-title';
+    title.style.fontSize='20px';title.style.fontWeight='800';
+    title.textContent = q.askBigger ? '🔼 نبحث عن العدد الأكبر' : '🔽 نبحث عن العدد الأصغر';
+    card.appendChild(title);
+
+    const step = document.createElement('div');
+    step.className = 'sol-step';
+    step.textContent = 'نرسم القلوب تحت كل رقم ونقارن';
+    card.appendChild(step);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'sol-comp';
+    card.appendChild(wrap);
+
+    const correctNum = q.correct;
+    const otherNum = q.compareA === correctNum ? q.compareB : q.compareA;
+    const icon = q.icon || this.ICON;
+
+    const A = this.buildTower(q.compareA, 0.2, q.compareA === correctNum, icon);
+    const symEl = document.createElement('div');
+    symEl.className = 'sol-comp-symbol winner-glow';
+    symEl.textContent = q.compareA > q.compareB ? '>' : '<';
+    const B = this.buildTower(q.compareB, 0.2, q.compareB === correctNum, icon);
+
+    wrap.appendChild(A.col);
+    wrap.appendChild(symEl);
+    wrap.appendChild(B.col);
+
+    const maxDelay = Math.max(A.finishDelay, B.finishDelay) + 0.4;
+    symEl.style.animationDelay = `${maxDelay}s`;
+
+    // After numbers appear, stamp × on the loser's tower icons
+    const loserWraps = q.compareA === correctNum ? B.wraps : A.wraps;
+    const stampStart = maxDelay + 0.5;
+    loserWraps.forEach((w, i) => {
+      const x = w.querySelector('.sol-x-mark');
+      setTimeout(() => { x.classList.add('show'); w.classList.add('taken'); }, (stampStart + i*0.08)*1000);
+    });
+
+    // Grow the winner's icons
+    const winnerWraps = q.compareA === correctNum ? A.wraps : B.wraps;
+    const growStart = stampStart + loserWraps.length*0.08 + 0.3;
+    winnerWraps.forEach((w, i) => {
+      setTimeout(() => w.classList.add('grow'), (growStart + i*0.05)*1000);
+    });
+
+    const resultDelay = growStart + winnerWraps.length*0.05 + 0.4;
+    const result = document.createElement('div');
+    result.className = 'sol-result';
+    result.style.animationDelay = `${resultDelay}s`;
+    result.innerHTML = `<span class="sparkle">✨</span><span>${correctNum}</span><span class="sparkle">✨</span>`;
+    card.appendChild(result);
+
+    const note = document.createElement('div');
+    note.className = 'sol-note';
+    note.textContent = q.askBigger
+      ? `🌟 ${correctNum} أكبر من ${otherNum}`
+      : `🌟 ${correctNum} أصغر من ${otherNum}`;
+    note.style.animationDelay = `${resultDelay+0.8}s`;
+    card.appendChild(note);
+  },
+
+  renderSeqSol(card, q, ans) {
+    const title = document.createElement('div');
+    title.className = 'sol-title';
+    title.style.fontSize='20px';title.style.fontWeight='800';
+    title.textContent = q.type === 'next' ? '⏭ نبحث عن العدد التالي' : '⏮ نبحث عن العدد السابق';
+    card.appendChild(title);
+
+    const step = document.createElement('div');
+    step.className = 'sol-step';
+    step.textContent = q.type === 'next'
+      ? `بعد ${q.n} نزيد قلباً واحداً 💖`
+      : `قبل ${q.n} نأخذ قلباً واحداً 💖`;
+    card.appendChild(step);
+
+    // Visual: draw n icons big, then add/remove one to show the answer
+    const icon = q.icon || this.ICON;
+    const row = document.createElement('div');
+    row.className = 'sol-icons';
+    card.appendChild(row);
+
+    let delay = 0.2;
+    const wraps = [];
+    for (let i=0;i<q.n;i++) {
+      const w = this.makeIconWrap(icon, delay);
+      row.appendChild(w);
+      wraps.push(w);
+      delay += 0.18;
+    }
+
+    if (q.type === 'next') {
+      // Add one new with special color
+      const extra = this.makeIconWrap(icon, delay+0.4);
+      const ic = extra.querySelector('.sol-icon');
+      ic.style.filter = 'hue-rotate(120deg) drop-shadow(0 4px 8px rgba(107,203,119,0.5))';
+      row.appendChild(extra);
+      delay += 0.7;
+      // Grow all together
+      [...wraps, extra].forEach((w,i) => {
+        setTimeout(() => w.classList.add('grow'), (delay + i*0.04)*1000);
+      });
+      delay += 0.6;
+    } else {
+      // Stamp × on the last one
+      const stampAt = delay + 0.4;
+      const last = wraps[wraps.length-1];
+      const x = last.querySelector('.sol-x-mark');
+      setTimeout(() => { x.classList.add('show'); last.classList.add('taken'); }, stampAt*1000);
+      delay = stampAt + 0.7;
+      // Grow the remaining ones
+      for (let i=0;i<wraps.length-1;i++) {
+        setTimeout(() => wraps[i].classList.add('grow'), (delay + i*0.05)*1000);
+      }
+      delay += wraps.length*0.05 + 0.4;
+    }
+
+    // Show small sequence below for clarity
+    const seq = document.createElement('div');
+    seq.className = 'sol-seq';
+    seq.style.opacity = '0';
+    seq.style.animation = `fadeIn .5s ${delay}s ease forwards`;
+    card.appendChild(seq);
+
+    const start = Math.max(1, Math.min(q.n, q.correct) - 1);
+    const end = Math.min(20, Math.max(q.n, q.correct) + 1);
+    let sDelay = delay + 0.2;
+    for (let v = start; v <= end; v++) {
+      if (v > start) {
+        const arr = document.createElement('span');
+        arr.className = 'sol-seq-arrow';
+        arr.textContent = '→';
+        arr.style.animationDelay = `${sDelay}s`;
+        seq.appendChild(arr);
+        sDelay += 0.08;
+      }
+      const numEl = document.createElement('span');
+      const isAnswer = v === q.correct;
+      const isGiven = v === q.n;
+      numEl.className = 'sol-seq-num' + (isAnswer ? ' answer' : (isGiven ? ' given' : ''));
+      numEl.textContent = v;
+      numEl.style.animationDelay = `${sDelay + (isAnswer?0.4:0)}s`;
+      seq.appendChild(numEl);
+      sDelay += 0.18;
+    }
+    delay = sDelay + 0.6;
+
+    const result = document.createElement('div');
+    result.className = 'sol-result';
+    result.style.animationDelay = `${delay}s`;
+    result.innerHTML = `<span class="sparkle">✨</span><span>${q.correct}</span><span class="sparkle">✨</span>`;
+    card.appendChild(result);
+
+    const note = document.createElement('div');
+    note.className = 'sol-note';
+    note.textContent = q.type === 'next'
+      ? `🌟 العدد التالي بعد ${q.n} هو ${q.correct}`
+      : `🌟 العدد السابق قبل ${q.n} هو ${q.correct}`;
+    note.style.animationDelay = `${delay+0.8}s`;
+    card.appendChild(note);
+  },
+
+  renderSymbolSol(card, q, ans) {
+    const title = document.createElement('div');
+    title.className = 'sol-title';
+    title.style.fontSize='20px';title.style.fontWeight='800';
+    title.textContent = '⚖️ نقارن بين العددين بالقلوب';
+    card.appendChild(title);
+
+    const big = Math.max(q.a, q.b);
+    const small = Math.min(q.a, q.b);
+    const step = document.createElement('div');
+    step.className = 'sol-step';
+    step.textContent = `${big} أكبر من ${small}، فالرمز ${q.correct} يفتح ناحية الأكبر`;
+    card.appendChild(step);
+
+    const icon = q.icon || this.ICON;
+    const wrap = document.createElement('div');
+    wrap.className = 'sol-comp';
+    card.appendChild(wrap);
+
+    const A = this.buildTower(q.a, 0.2, q.a === big, icon);
+    const symEl = document.createElement('div');
+    symEl.className = 'sol-comp-symbol winner-glow';
+    symEl.textContent = q.correct;
+    const B = this.buildTower(q.b, 0.2, q.b === big, icon);
+    wrap.appendChild(A.col);
+    wrap.appendChild(symEl);
+    wrap.appendChild(B.col);
+
+    const maxDelay = Math.max(A.finishDelay, B.finishDelay) + 0.4;
+    symEl.style.animationDelay = `${maxDelay}s`;
+
+    // Stamp × on smaller tower
+    const loserWraps = q.a === big ? B.wraps : A.wraps;
+    const winnerWraps = q.a === big ? A.wraps : B.wraps;
+    const stampStart = maxDelay + 0.5;
+    loserWraps.forEach((w, i) => {
+      const x = w.querySelector('.sol-x-mark');
+      setTimeout(() => { x.classList.add('show'); w.classList.add('taken'); }, (stampStart + i*0.08)*1000);
+    });
+    const growStart = stampStart + loserWraps.length*0.08 + 0.3;
+    winnerWraps.forEach((w, i) => {
+      setTimeout(() => w.classList.add('grow'), (growStart + i*0.05)*1000);
+    });
+
+    const finalDelay = growStart + winnerWraps.length*0.05 + 0.4;
+    const finalRow = document.createElement('div');
+    finalRow.className = 'sol-symbol-final';
+    finalRow.innerHTML = `<span>${q.a}</span><span class="big-sym">${q.correct}</span><span>${q.b}</span>`;
+    finalRow.style.animationDelay = `${finalDelay}s`;
+    card.appendChild(finalRow);
+
+    const note = document.createElement('div');
+    note.className = 'sol-note';
+    note.textContent = `🌟 الرمز الصحيح هو ${q.correct}`;
+    note.style.animationDelay = `${finalDelay+0.8}s`;
+    card.appendChild(note);
+  },
+
+  // ========== NAVIGATION ==========
+  nextQuestion() {
+    const next = this.state.currentIndex + 1;
+    if (next >= this.state.questions.length) { this.showResults(); return; }
+    this.state.currentIndex = next;
+    this.showScreen('quizScreen');
+    this.renderQuestion(next);
+  },
+
+  // ========== RESULTS ==========
+  showResults() {
+    this.showScreen('resultScreen');
+    const total = this.state.questions.length;
+    const correct = this.state.correctCount;
+    const pct = correct / total;
+
+    document.getElementById('resultScore').textContent = `${correct}/${total}`;
+    let emoji, msg;
+    if (pct === 1) { emoji='🏆'; msg=`ممتاز يا ${CHILD_NAME}! درجة كاملة! 🌟🌟🌟`; }
+    else if (pct >= 0.8) { emoji='🎉'; msg=`أحسنتِ يا ${CHILD_NAME}! نتيجة رائعة! 💪`; }
+    else if (pct >= 0.6) { emoji='👍'; msg='جيد جداً! واصلي المحاولة! 🌈'; }
+    else if (pct >= 0.4) { emoji='💪'; msg='لا بأس! حاولي مرة أخرى ستتحسنين! 😊'; }
+    else { emoji='🌈'; msg=`كلنا نتعلم يا ${CHILD_NAME}! جرّبي مرة أخرى! 💖`; }
+    document.getElementById('resultEmoji').textContent = emoji;
+    document.getElementById('resultMessage').textContent = msg;
+
+    const list = document.getElementById('resultList');
+    list.innerHTML = '';
+
+    this.state.questions.forEach((q, i) => {
+      const ans = this.state.answers[i];
+      const isCorrect = ans && ans.correct;
+      const item = document.createElement('div');
+      item.className = `result-item ${isCorrect?'correct':'wrong'}`;
+
+      const hdr = document.createElement('div'); hdr.className='result-q-header';
+      const nS = document.createElement('span'); nS.className='result-q-num'; nS.textContent=`سؤال ${i+1} | ${q.typeAr}`; hdr.appendChild(nS);
+      const sS = document.createElement('span'); sS.className='result-q-status'; sS.textContent=isCorrect?'✅':'❌'; hdr.appendChild(sS);
+      item.appendChild(hdr);
+
+      const tD = document.createElement('div'); tD.className='result-q-text';
+      tD.textContent = this.getQuestionSummary(q);
+      item.appendChild(tD);
+
+      const aD = document.createElement('div'); aD.className='result-answers';
+      if (isCorrect) {
+        aD.innerHTML = `إجابتك: <span class="right">${ans.selected}</span> ✓`;
+      } else {
+        aD.innerHTML = `إجابتك: <span class="wrong">${ans?ans.selected:'لم تجيبي'}</span> ✗ | الإجابة الصحيحة: <span class="cr">${q.correct}</span>`;
+      }
+      item.appendChild(aD);
+      list.appendChild(item);
+    });
+  },
+
+  getQuestionSummary(q) {
+    switch(q.type) {
+      case 'addition': return `${q.a} + ${q.b} = ؟`;
+      case 'subtraction': return `${q.a} − ${q.b} = ؟`;
+      case 'bigger': return `أيهما أكبر: ${q.compareA} أم ${q.compareB}؟`;
+      case 'smaller': return `أيهما أصغر: ${q.compareA} أم ${q.compareB}؟`;
+      case 'next': return `ما العدد بعد ${q.n}؟`;
+      case 'previous': return `ما العدد قبل ${q.n}؟`;
+      case 'symbol': return `${q.a} ؟ ${q.b}  (> أو <)`;
+    }
+  },
+
+  getQuestionRecap(q) {
+    switch(q.type) {
+      case 'addition': return `<bdi>${q.a} + ${q.b} = ؟</bdi>`;
+      case 'subtraction': return `<bdi>${q.a} − ${q.b} = ؟</bdi>`;
+      case 'bigger': return `<span style="direction:rtl">أيّ أكبر؟</span> &nbsp; <bdi>${q.compareA}</bdi> &nbsp; أم &nbsp; <bdi>${q.compareB}</bdi>`;
+      case 'smaller': return `<span style="direction:rtl">أيّ أصغر؟</span> &nbsp; <bdi>${q.compareA}</bdi> &nbsp; أم &nbsp; <bdi>${q.compareB}</bdi>`;
+      case 'next': return `<span style="direction:rtl">العدد بعد</span> &nbsp; <bdi>${q.n}</bdi> &nbsp; <span style="direction:rtl">= ؟</span>`;
+      case 'previous': return `<span style="direction:rtl">العدد قبل</span> &nbsp; <bdi>${q.n}</bdi> &nbsp; <span style="direction:rtl">= ؟</span>`;
+      case 'symbol': return `<bdi>${q.a}</bdi> &nbsp; <span style="color:var(--purple)">?</span> &nbsp; <bdi>${q.b}</bdi>`;
+    }
+  }
+};
+
+function randInt(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => App.init());
+} else { App.init(); }
+</script>
+</body>
+</html>

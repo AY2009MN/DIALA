@@ -1,0 +1,35 @@
+{
+  "name": "اختبار الرياضيات - ديالا",
+  "short_name": "رياضيات",
+  "description": "اختبار تفاعلي للأطفال لتعلم الجمع والطرح والمقارنة",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF0F5",
+  "theme_color": "#FF6B9D",
+  "dir": "rtl",
+  "lang": "ar",
+  "prefer_related_applications": false,
+  "categories": ["education", "kids"],
+  "screenshots": [],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%23FF6B9D'/%3E%3Ctext x='256' y='340' text-anchor='middle' font-size='240' fill='white'%3E💖%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%23FF6B9D'/%3E%3Ctext x='96' y='130' text-anchor='middle' font-size='120' fill='white'%3E💖%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 144'%3E%3Crect width='144' height='144' rx='24' fill='%23FF6B9D'/%3E%3Ctext x='72' y='98' text-anchor='middle' font-size='90' fill='white'%3E💖%3C/text%3E%3C/svg%3E",
+      "sizes": "144x144",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
